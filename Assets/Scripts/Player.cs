@@ -14,19 +14,24 @@ public class Player : MonoBehaviour {
     private Vector3 lastInteractDir;
 
     private void Start() {
-
+        PlayerControlsUI.Instance.OnJoyStickMoved += PlayerControlsUI_OnJoyStickMoved;
     }
 
     void Update() {        
-        HandleMovement();
+        HandleMovement(GameInput.Instance.GetMovementVectorNormalized());
+    }
+
+    private void PlayerControlsUI_OnJoyStickMoved(object sender, PlayerControlsUI.OnJoyStickMovedArgs e) {
+        Debug.Log(e);
+        HandleMovement(new Vector2(e.horizontal, e.vertical));
     }
 
     public bool IsWalking() {
         return isWalking;
     }
 
-    private void HandleMovement() {
-        Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
+    private void HandleMovement(Vector2 inputVector) {
+        //Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
         Debug.Log(inputVector);
         Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y);
 
