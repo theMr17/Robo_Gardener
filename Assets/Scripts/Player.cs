@@ -23,7 +23,7 @@ public class Player : MonoBehaviour {
 
     private void PlayerControlsUI_OnJoyStickMoved(object sender, PlayerControlsUI.OnJoyStickMovedArgs e) {
         Debug.Log(e);
-        HandleMovement(new Vector2(e.horizontal, e.vertical));
+        HandleMovement(new Vector2(e.horizontal, e.vertical).normalized);
     }
 
     public bool IsWalking() {
