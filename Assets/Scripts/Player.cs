@@ -5,24 +5,43 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 
-    public static Player LocalInstance { get; private set; }
+    public static Player Instance { get; private set; }
 
-    [SerializeField] private float moveSpeed = 7f;
+    [SerializeField] private float runSpeed = 18f;
+    [SerializeField] private float walkSpeed = 7f;
+    [SerializeField] private float crouchWalkSpeed = 5.5f;
     [SerializeField] private LayerMask collisionsLayerMask;
 
     private bool isWalking = false;
+    private bool isCrouching = false;
+    private bool isRunning = false;
     private Vector3 lastInteractDir;
+
+    private void Awake() {
+        Instance = this;
+    }
 
     private void Start() {
         PlayerControlsUI.Instance.OnJoyStickMoved += PlayerControlsUI_OnJoyStickMoved;
+        GameInput.Instance.OnCrouchAction += GameInput_OnCrouchAction;
+        GameInput.Instance.OnRunAction += GameInput_OnRunAction;
     }
+
+    private void GameInput_OnCrouchAction(object sender, EventArgs e) {
+        isCrouching = !isCrouching;
+    }
+
+    private void GameInput_OnRunAction(object sender, EventArgs e) {
+        isRunning = !isRunning;
+    }
+
 
     void Update() {        
         HandleMovement(GameInput.Instance.GetMovementVectorNormalized());
     }
 
     private void PlayerControlsUI_OnJoyStickMoved(object sender, PlayerControlsUI.OnJoyStickMovedArgs e) {
-        Debug.Log(e);
+        // Debug.Log(e);
         HandleMovement(new Vector2(e.horizontal, e.vertical).normalized);
     }
 
@@ -30,10 +49,19 @@ public class Player : MonoBehaviour {
         return isWalking;
     }
 
+    public bool IsCrouching() {
+        return isCrouching;
+    }
+
+    public bool IsRunning() {
+        return isRunning && isWalking;
+    }
+
     private void HandleMovement(Vector2 inputVector) {
-        //Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
         Debug.Log(inputVector);
         Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y);
+
+        float moveSpeed = isCrouching ? crouchWalkSpeed : isRunning ? runSpeed : walkSpeed;
 
         float moveDistance = moveSpeed * Time.deltaTime;
         float playerRadius = 0.7f;

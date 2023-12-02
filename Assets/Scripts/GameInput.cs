@@ -9,6 +9,8 @@ public class GameInput : MonoBehaviour {
 
     public static GameInput Instance { get; private set; }
 
+    public event EventHandler OnCrouchAction;
+    public event EventHandler OnRunAction;
     public event EventHandler OnInteractAction;
     public event EventHandler OnInteractAlternateAction;
     public event EventHandler OnPauseAction;
@@ -19,6 +21,8 @@ public class GameInput : MonoBehaviour {
         Move_Down,
         Move_Left,
         Move_Right,
+        Crouch,
+        Run,
         Interact,
         InteractAlternate,
         Pause,
@@ -37,6 +41,8 @@ public class GameInput : MonoBehaviour {
         
         playerInputActions.Player.Enable();
 
+        playerInputActions.Player.Crouch.performed += Crouch_performed;
+        playerInputActions.Player.Run.performed += Run_performed;
         // playerInputActions.Player.Interact.performed += Interact_performed;
         // playerInputActions.Player.InteractAlternate.performed += InteractAlternate_performed;
         // playerInputActions.Player.Pause.performed += Pause_performed;
@@ -49,6 +55,14 @@ public class GameInput : MonoBehaviour {
 
     //     playerInputActions.Dispose();
     // }
+
+    private void Crouch_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        OnCrouchAction?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void Run_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        OnRunAction?.Invoke(this, EventArgs.Empty);
+    }
 
     // private void Interact_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
     //     OnInteractAction?.Invoke(this, EventArgs.Empty);
